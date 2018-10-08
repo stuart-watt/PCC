@@ -50,9 +50,9 @@ def select_train_images(image):
     plants = []
     
     # create BGR, HSV and LAB copies of the image. each pixel has 9 features
-    img_BGR = cv2.imread(image)
-    img_HSV = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2HSV)
-    img_LAB = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2LAB)
+    img_BGR = clone
+    img_HSV = cv2.cvtColor(clone, cv2.COLOR_BGR2HSV)
+    img_LAB = cv2.cvtColor(clone, cv2.COLOR_BGR2LAB)
 
     # concatenate the 3 images to create the input data for the model.
     img_final = np.concatenate((img_BGR, img_HSV, img_LAB), axis=2)
@@ -61,6 +61,7 @@ def select_train_images(image):
         plants.append(img_final[start[1]:end[1], start[0]:end[0]])
         
     return(plants)
+
 
 def prepare_train_data(image):
     print('Obtaining plant parts...')

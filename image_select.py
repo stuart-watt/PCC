@@ -63,7 +63,7 @@ def select_train_images(image):
     return(plants)
 
 
-def prepare_train_data(image):
+def get_training(image):
     print('Obtaining plant parts...')
     plant_img = select_train_images(image)
     
@@ -71,7 +71,6 @@ def prepare_train_data(image):
         plant_img[k] = plant_img[k].reshape(-1, plant_img[k].shape[-1])
 
     train_plants = np.concatenate(plant_img, axis=0)
-    train_plants = np.concatenate((train_plants, np.ones((len(train_plants), 1))), axis=1)
     
     print('Obtaining background parts...')
     back_img = select_train_images(image)
@@ -80,9 +79,13 @@ def prepare_train_data(image):
         back_img[k] = back_img[k].reshape(-1, back_img[k].shape[-1])
 
     train_back = np.concatenate(back_img, axis=0)
-    train_back = np.concatenate((train_back, np.zeros((len(train_back), 1))), axis=1)
     
-    train_set = np.concatenate((train_plants, train_back), axis=0)
+    return(train_plants, train_back)
+
+def prepare_training(train_p, train_b):
+    train_p = np.concatenate((train_p, np.ones((len(train_p), 1))), axis=1)
+    train_b = np.concatenate((train_b, np.zeros((len(train_b), 1))), axis=1)
+    
+    train_set = np.concatenate((train_p, train_b), axis=0)
     np.random.shuffle(train_set)
-    
     return(train_set[:,:-1], train_set[:,-1])

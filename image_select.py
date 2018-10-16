@@ -6,6 +6,8 @@ Created on Mon Oct  1 13:26:36 2018
 """
 import numpy as np
 import cv2
+from sklearn.ensemble import RandomForestClassifier
+import time
 
 def select_train_images(image):
     starts, ends, ii = [], [], 0
@@ -82,6 +84,7 @@ def get_training(image):
     
     return(train_plants, train_back)
 
+
 def prepare_training(train_p, train_b):
     train_p = np.concatenate((train_p, np.ones((len(train_p), 1))), axis=1)
     train_b = np.concatenate((train_b, np.zeros((len(train_b), 1))), axis=1)
@@ -89,3 +92,37 @@ def prepare_training(train_p, train_b):
     train_set = np.concatenate((train_p, train_b), axis=0)
     np.random.shuffle(train_set)
     return(train_set[:,:-1], train_set[:,-1])
+    
+    
+def train_plants(file):
+    plant, back = get_training(file)
+    X_train, y_train = prepare_training(plant, back)
+    
+    clf = RandomForestClassifier(n_estimators=100)
+    clf.fit(X_train, y_train)
+    
+    return clf
+
+
+def remove_back(image, classifier):
+    start = time.perf_counter()
+    
+    img_BGR = cv2.imread(image)
+    img_HSV = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2HSV)
+    img_LAB = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2LAB)
+    img_final = np.concatenate((img_BGR, img_HSV, img_LAB), axis=2).reshape((-1, 9))
+    
+    test_pred = classifier.predict(img_final)
+    test_pred = test_pred.reshape((len(test_pred),1))
+    test_pred = np.concatenate((test_pred, test_pred, test_pred), axis=1).reshape((img_BGR.shape[0], img_BGR.shape[1], 3))
+    
+    new_image = np.multiply(img_BGR, test_pred).astype(np.uint8)
+    
+    end = time.perf_counter()
+    print(end - start)
+    
+    cv2.imshow('trained image', new_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    return new_image

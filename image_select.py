@@ -10,6 +10,17 @@ from sklearn.ensemble import RandomForestClassifier
 import time
 
 def select_train_images(image):
+    '''
+    User interface for selecting training data from image.
+    
+    Click, drag and release to draw a rectangle over desired training area.
+    Select as many samples as you want.
+    Press 'c' to finish selection.
+    Press 'r' to refresh image and select again.
+    
+    Returns a list of selected samples from the image
+    '''
+    
     starts, ends, ii = [], [], 0
     img_BGR = cv2.imread(image)
     cv2.namedWindow("image")
@@ -66,6 +77,11 @@ def select_train_images(image):
 
 
 def get_training(image):
+    '''
+    Select first the plant images, then the background images.
+    Returns flattened array of pixels for each class (plant or background).
+    Each pixel has 9 features.
+    '''
     print('Obtaining plant parts...')
     plant_img = select_train_images(image)
     
@@ -86,6 +102,13 @@ def get_training(image):
 
 
 def prepare_training(train_p, train_b):
+    '''
+    Function for assigning classification values (0 - background, 1 - plant)
+    to the pixels. The arrays are then merged and randomly shuffled.
+    
+    Returns randomised training features and training classes as arrays.
+    '''
+    
     train_p = np.concatenate((train_p, np.ones((len(train_p), 1))), axis=1)
     train_b = np.concatenate((train_b, np.zeros((len(train_b), 1))), axis=1)
     
@@ -95,6 +118,13 @@ def prepare_training(train_p, train_b):
     
     
 def train_plants(file):
+    '''
+    Function for obtaining training data and 
+    training a classifier on training data.
+    The classifier is a Random Forrest classifier. 
+    n_estimators=100
+    '''
+    
     plant, back = get_training(file)
     X_train, y_train = prepare_training(plant, back)
     
@@ -105,6 +135,12 @@ def train_plants(file):
 
 
 def remove_back(image, classifier):
+    '''
+    Perform background removal on image. 
+    image is passed into the trained classifier and each pixel is classified.
+    Returns and displays image free of background
+    '''
+    
     start = time.perf_counter()
     
     img_BGR = cv2.imread(image)

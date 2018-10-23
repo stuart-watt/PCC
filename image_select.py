@@ -82,24 +82,28 @@ def get_training(image):
     Returns flattened array of pixels for each class (plant or background).
     Each pixel has 9 features.
     '''
-    print('Obtaining plant parts...')
-    plant_img = select_train_images(image)
+    if image is not None:
+        print('Obtaining plant parts...')
+        plant_img = select_train_images(image)
+        
+        for k in range(len(plant_img)):
+            plant_img[k] = plant_img[k].reshape(-1, plant_img[k].shape[-1])
     
-    for k in range(len(plant_img)):
-        plant_img[k] = plant_img[k].reshape(-1, plant_img[k].shape[-1])
-
-    train_plants = np.concatenate(plant_img, axis=0)
+        train_plants = np.concatenate(plant_img, axis=0)
+        
+        print('Obtaining background parts...')
+        back_img = select_train_images(image)
+        
+        for k in range(len(back_img)):
+            back_img[k] = back_img[k].reshape(-1, back_img[k].shape[-1])
     
-    print('Obtaining background parts...')
-    back_img = select_train_images(image)
+        train_back = np.concatenate(back_img, axis=0)
+        
+        return(train_plants, train_back)
     
-    for k in range(len(back_img)):
-        back_img[k] = back_img[k].reshape(-1, back_img[k].shape[-1])
-
-    train_back = np.concatenate(back_img, axis=0)
-    
-    return(train_plants, train_back)
-
+    else:
+        raise ValueError('No file passed')
+        
 
 def prepare_training(train_p, train_b):
     '''
@@ -157,8 +161,8 @@ def remove_back(image, classifier):
     end = time.perf_counter()
     print(end - start)
     
-    cv2.imshow('trained image', new_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow('trained image', new_image)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
     
     return new_image

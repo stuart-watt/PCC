@@ -9,9 +9,11 @@ Created on Mon Oct  1 13:53:46 2018
 import image_select
 import cv2
 import tkinter as TK
+import tkinter.messagebox as tkmb
 from tkinter.filedialog import askopenfilename
 from PIL import ImageTk, Image
 
+model, filename = None, None
 
 def get_file():
     global filename, display, w
@@ -39,21 +41,38 @@ def get_file():
 
 def train():
     global model
-    model = image_select.train_plants(filename)
+    if filename is not None:
+        tkmb.showinfo('Selecting training segments', 
+                      '''How to collect training data:\n
+                      1. Click/drag to create box around plant segments.
+                      2. Draw as many as required.
+                      3. Press 'c' to save segments and continue.
+                      4. Press 'r' to clear the selections and refresh.
+                      5. Repeat for the background segments.''')
+        model = image_select.train_plants(filename)
+    else:
+        tkmb.showerror('Error', 'No image selected')
     
 def subtract(model):
     global w
-    new_image = image_select.remove_back(filename, model)
-    new_image = cv2.resize(new_image, (500, 500))
-    #Rearrang the color channel from BGR to RGB
-    b,g,r = cv2.split(new_image)
-    img = cv2.merge((r,g,b))
+    if model is not None:
+        
+        new_image = image_select.remove_back(filename, model)
+        new_image = cv2.resize(new_image, (500, 500))
+        #Rearrang the color channel from BGR to RGB
+        b,g,r = cv2.split(new_image)
+        img = cv2.merge((r,g,b))
+        
+        # Convert to ImageTK object
+        im = Image.fromarray(img)
+        imgtk = ImageTk.PhotoImage(image=im) 
+        w.config(image = imgtk)
+        w.image = imgtk
     
-    # Convert to ImageTK object
-    im = Image.fromarray(img)
-    imgtk = ImageTk.PhotoImage(image=im) 
-    w.config(image = imgtk)
-    w.image = imgtk
+    else:
+        tkmb.showerror('Model Error', 
+                       'No model trained.\n Select an image and train the model first')
+    
     
     
 root = TK.Tk()
@@ -96,9 +115,11 @@ train_model = TK.Button(toolbar,
                    bg='red',
                    command=lambda: subtract(model))
 
+
+
 get_image.pack(side=TK.LEFT, fill=TK.Y)
 select_segments.pack(side=TK.LEFT, fill=TK.Y)
-train_model.pack(side=TK.RIGHT, fill=TK.Y)
+train_model.pack(side=TK.LEFT, fill=TK.Y)
 
 display = TK.Entry(root, font='Helvetica 10 bold')
 display.pack(side=TK.LEFT, fill=TK.X, expand=True)

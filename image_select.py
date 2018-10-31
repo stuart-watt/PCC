@@ -23,8 +23,14 @@ def select_train_images(image):
     
     starts, ends, ii = [], [], 0
     img_BGR = cv2.imread(image)
-    cv2.namedWindow("image")
     clone = img_BGR.copy()
+    
+    # Resize the image to fit the screen before training segment selection.
+    # Resize so height is 1000 pixels.
+    # Save the original dimensions for conversion back to original resolution.
+    scale_factor = img_BGR.shape[0]/700
+    img_BGR = cv2.resize(img_BGR, (0,0), fx=1/scale_factor, fy=1/scale_factor)
+    cv2.namedWindow("image")
     
     def select_region(event, x, y, flags, params):
         nonlocal starts, ends, ii
@@ -61,6 +67,10 @@ def select_train_images(image):
     cv2.destroyAllWindows()
     
     plants = []
+    
+    # Scale back the rectangles to match the original image.
+    starts = [(int(scale_factor*x), int(scale_factor*y)) for x, y in starts]
+    ends = [(int(scale_factor*x), int(scale_factor*y)) for x, y in ends]
     
     # create BGR, HSV and LAB copies of the image. each pixel has 9 features
     img_BGR = clone

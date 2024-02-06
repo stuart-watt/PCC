@@ -1,0 +1,14 @@
+name: PCC
+channels:
+  - anaconda
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - tk
+  - pip
+  - pip:
+    - opencv-python

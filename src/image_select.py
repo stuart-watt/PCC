@@ -4,10 +4,13 @@ Created on Mon Oct  1 13:26:36 2018
 
 @author: Stuart Watt
 """
-import numpy as np
-import cv2
-from sklearn.ensemble import RandomForestClassifier
+
 import time
+
+import cv2
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+
 
 def select_train_images(image):
     '''

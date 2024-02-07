@@ -5,13 +5,13 @@ Created on Mon Oct  1 13:53:46 2018
 @author: 21493806
 """
 
-
-import image_select
 import cv2
+from PIL import ImageTk, Image
 import tkinter as TK
 import tkinter.messagebox as tkmb
 from tkinter.filedialog import askopenfilename
-from PIL import ImageTk, Image
+
+import src.image_select as image_select
 
 model, filename = None, None
 imgtk = None

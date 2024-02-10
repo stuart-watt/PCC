@@ -97,7 +97,7 @@ def get_training(image):
         print("Obtaining plant parts...")
         plant_img = select_train_images(image)
 
-        for k in range(len(plant_img)):
+        for k, _ in enumerate(plant_img):
             plant_img[k] = plant_img[k].reshape(-1, plant_img[k].shape[-1])
 
         train_plants = np.concatenate(plant_img, axis=0)
@@ -143,8 +143,10 @@ def train_plants(file):
     plant, back = get_training(file)
     X_train, y_train = prepare_training(plant, back)
 
+    print("Training model")
     clf = RandomForestClassifier(n_estimators=100)
     clf.fit(X_train, y_train)
+    print("Model trained!")
 
     return clf
 

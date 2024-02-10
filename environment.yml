@@ -3,11 +3,10 @@ channels:
   - anaconda
   - conda-forge
 dependencies:
-  - python
+  - python==3.11
   - numpy
   - pandas
   - scikit-learn
-  - matplotlib
   - jupyterlab
   - tk
   - black

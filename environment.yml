@@ -8,7 +8,12 @@ dependencies:
   - pandas
   - scikit-learn
   - matplotlib
+  - jupyterlab
   - tk
+  - black
+  - pillow
   - pip
   - pip:
     - opencv-python
+    - -e src/PCC/
+
